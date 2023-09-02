@@ -229,7 +229,7 @@ enum SeenStatus {
 
 impl<'a> Tokenizer<'a> {
     #[inline]
-    pub fn new(input: &str) -> Tokenizer {
+    pub const fn new(input: &str) -> Tokenizer {
         Tokenizer {
             input,
             position: 0,
@@ -322,10 +322,12 @@ impl<'a> Tokenizer<'a> {
 
     pub fn current_source_line(&self) -> &'a str {
         let current = self.position();
-        let start = self.slice(SourcePosition(0)..current)
+        let start = self
+            .slice(SourcePosition(0)..current)
             .rfind(|c| matches!(c, '\r' | '\n' | '\x0C'))
             .map_or(0, |start| start + 1);
-        let end = self.slice(current..SourcePosition(self.input.len()))
+        let end = self
+            .slice(current..SourcePosition(self.input.len()))
             .find(|c| matches!(c, '\r' | '\n' | '\x0C'))
             .map_or(self.input.len(), |end| current.0 + end);
         self.slice(SourcePosition(start)..SourcePosition(end))
@@ -424,7 +426,10 @@ impl<'a> Tokenizer<'a> {
 
     #[inline]
     fn next_char(&self) -> char {
-        unsafe { self.input.get_unchecked(self.position().0..) }.chars().next().unwrap()
+        unsafe { self.input.get_unchecked(self.position().0..) }
+            .chars()
+            .next()
+            .unwrap()
     }
 
     // Given that a newline has been seen, advance over the newline
